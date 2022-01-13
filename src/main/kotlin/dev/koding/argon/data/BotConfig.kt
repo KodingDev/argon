@@ -19,7 +19,14 @@ data class BotConfig(
         val token: String = "",
         val guildId: String? = null,
         val ownerId: String? = null,
-    )
+        val status: Status? = null
+    ) {
+        @Serializable
+        data class Status(
+            val type: String = "",
+            val text: String = "",
+        )
+    }
 
     @Serializable
     data class Prometheus(

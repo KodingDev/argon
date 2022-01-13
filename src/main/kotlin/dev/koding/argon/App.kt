@@ -36,6 +36,16 @@ suspend fun main() {
         extensions {
             add(::ClockifyExtension)
         }
+
+        config.discord.status?.let { s ->
+            presence {
+                when (s.type.lowercase()) {
+                    "watching" -> watching(s.text)
+                    "listening" -> listening(s.text)
+                    else -> playing(s.text)
+                }
+            }
+        }
     }
 
     bot.start()
