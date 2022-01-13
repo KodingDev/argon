@@ -110,3 +110,7 @@ build/
 
 # Env vars - don't commit this!
 .env
+run/
+
+# Ignore .idea folder
+.idea/

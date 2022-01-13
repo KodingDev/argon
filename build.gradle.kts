@@ -6,13 +6,13 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
 
-    id("com.github.jakemarsden.git-hooks")
     id("com.github.johnrengelman.shadow")
-    id("io.gitlab.arturbosch.detekt")
 }
 
-group = "template"
-version = "1.0-SNAPSHOT"
+group = "dev.koding"
+version = "1.0.0"
+
+val main = "dev.koding.argon.AppKt"
 
 repositories {
     // You can remove this if you're not testing locally-installed KordEx builds
@@ -25,8 +25,6 @@ repositories {
 }
 
 dependencies {
-    detektPlugins(libs.detekt)
-
     implementation(libs.kord.extensions)
     implementation(libs.kotlin.stdlib)
     implementation(libs.kx.ser)
@@ -36,17 +34,14 @@ dependencies {
     implementation(libs.jansi)
     implementation(libs.logback)
     implementation(libs.logging)
+
+    implementation(libs.prometheus.pushgateway)
+    implementation(libs.ktor.client.logging)
 }
 
 application {
     // This is deprecated, but the Shadow plugin requires it
-    mainClassName = "template.AppKt"
-}
-
-gitHooks {
-    setHooks(
-        mapOf("pre-commit" to "detekt")
-    )
+    mainClassName = main
 }
 
 tasks.withType<KotlinCompile> {
@@ -59,7 +54,7 @@ tasks.withType<KotlinCompile> {
 tasks.jar {
     manifest {
         attributes(
-            "Main-Class" to "template.AppKt"
+            "Main-Class" to main
         )
     }
 }
@@ -68,9 +63,4 @@ java {
     // Current LTS version of Java
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-}
-
-detekt {
-    buildUponDefaultConfig = true
-    config = rootProject.files("detekt.yml")
 }
