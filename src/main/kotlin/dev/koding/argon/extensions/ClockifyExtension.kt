@@ -28,10 +28,24 @@ class ClockifyExtension(override val name: String = "Clockify") : Extension() {
 
                         report.forEach { (client, data) ->
                             field {
-                                val workloadSummary = data.joinToString(separator = "\n") {
-                                    "`${it.project}`: ${it.description} (${it.time.formatElapsedTime()})" +
-                                            " - ${it.price.asCurrency()}"
+                                val workloadSummary = if (data.size <= 5) {
+                                    data.joinToString(separator = "\n") {
+                                        "`${it.project}`: ${it.description} (${it.time.formatElapsedTime()})" +
+                                                " - ${it.price.asCurrency()}"
+                                    }
+                                } else {
+                                    val sample = data.sortedByDescending { it.time }.take(5)
+                                    val remainingTime = data.sumOf { it.time } - sample.sumOf { it.time }
+                                    val remainingCost = data.sumOf { it.price } - sample.sumOf { it.price }
+
+                                    val header = sample
+                                        .joinToString(separator = "\n") {
+                                            "`${it.project}`: ${it.description} (${it.time.formatElapsedTime()})" +
+                                                    " - ${it.price.asCurrency()}"
+                                        }
+                                    "$header\n...and ${data.size - 5} more (${remainingTime.formatElapsedTime()} - ${remainingCost.asCurrency()})"
                                 }
+
                                 val totalEarned = data.sumOf { it.price }.asCurrency()
                                 val totalTime = data.sumOf { it.time }.formatElapsedTime()
 

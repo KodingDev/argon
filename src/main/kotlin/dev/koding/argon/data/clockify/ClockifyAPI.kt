@@ -54,9 +54,8 @@ object ClockifyHelper {
         val workspaces = ClockifyAPI.getWorkspaces()
 
         val data = workspaces.flatMap { workspace ->
-            val defaultRate =
-                workspace.memberships.find { it.userId == user.id && it.targetId == workspace.id }?.hourlyRate?.amount
-                    ?: 0.0
+            val defaultRate = workspace.memberships.find { it.userId == user.id && it.targetId == workspace.id }
+                ?.hourlyRate?.amount ?: 0.0
             val projects = ClockifyAPI.getProjects(workspace.id)
             val timeEntries = ClockifyAPI.getTimeEntries(
                 workspace.id,
