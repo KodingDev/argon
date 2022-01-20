@@ -19,6 +19,7 @@ class ClockifyExtension(override val name: String = "Clockify") : Extension() {
 
             action {
                 val report = ClockifyHelper.fetchMonthlyReport()
+                    .filterValues { reports -> reports.any { it.price > 0 } }
 
                 respondPublic {
                     embed {
