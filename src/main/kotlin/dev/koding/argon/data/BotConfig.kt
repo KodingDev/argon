@@ -12,7 +12,8 @@ data class BotConfig(
     val discord: Discord = Discord(),
     val prometheus: Prometheus? = null,
     val metrics: Metrics = Metrics(),
-    val clockify: Clockify? = null
+    val clockify: Clockify? = null,
+    val filter: Filter? = null,
 ) {
     @Serializable
     data class Discord(
@@ -52,4 +53,16 @@ data class BotConfig(
     data class Clockify(
         val apiKey: String = "",
     )
+
+    @Serializable
+    data class Filter(
+        val swearing: Swearing = Swearing(),
+    ) {
+        @Serializable
+        data class Swearing(
+            val list: List<String> = emptyList(),
+            val reactions: List<String> = emptyList(),
+            val deleteDelay: Long = 3000,
+        )
+    }
 }

@@ -7,6 +7,7 @@ import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.checks.userFor
 import dev.koding.argon.data.config
 import dev.koding.argon.extensions.ClockifyExtension
+import dev.koding.argon.extensions.FilterExtension
 import dev.koding.argon.metrics.MetricManager
 import dev.kord.common.Color
 import dev.kord.rest.builder.message.create.embed
@@ -35,6 +36,7 @@ suspend fun main() {
 
         extensions {
             add(::ClockifyExtension)
+            add(::FilterExtension)
         }
 
         config.discord.status?.let { s ->

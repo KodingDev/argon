@@ -18,6 +18,7 @@ repositories {
     // You can remove this if you're not testing locally-installed KordEx builds
     mavenLocal()
 
+    maven("https://jitpack.io")
     maven {
         name = "Kotlin Discord"
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
@@ -27,6 +28,7 @@ repositories {
 dependencies {
     implementation(libs.kord.extensions)
     implementation(libs.kotlin.stdlib)
+    implementation(libs.kotlin.reflect)
     implementation(libs.kx.ser)
 
     // Logging dependencies
