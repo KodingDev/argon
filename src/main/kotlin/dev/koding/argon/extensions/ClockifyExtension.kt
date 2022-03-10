@@ -50,7 +50,7 @@ class ClockifyExtension(override val name: String = "Clockify") : Extension() {
                                 val totalEarned = data.sumOf { it.price }.asCurrency()
                                 val totalTime = data.sumOf { it.time }.formatElapsedTime()
 
-                                name = client
+                                name = client.takeIf { it.isNotBlank() } ?: "No client"
                                 value = "$workloadSummary\nTotal: **$totalEarned** - **$totalTime**"
                             }
                         }
