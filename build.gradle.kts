@@ -49,7 +49,7 @@ dependencies {
 
 application {
     // This is deprecated, but the Shadow plugin requires it
-    mainClass.set(main)
+    mainClassName = main
 }
 
 tasks.withType<KotlinCompile> {
