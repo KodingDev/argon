@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.web3j.solidity.gradle.plugin.SolidityCompile
 
 plugins {
     application
@@ -8,6 +9,7 @@ plugins {
 
     id("com.github.johnrengelman.shadow")
     id("org.web3j")
+    id("com.dorongold.task-tree") version "2.1.0"
 }
 
 group = "dev.koding"
@@ -111,6 +113,18 @@ afterEvaluate {
     tasks.named("npmInstall").get().dependsOn(replaceVersions)
 
     // God awful
-    val java = tasks.compileJava.get()
-    java.setDependsOn(java.dependsOn.filter { (it as? TaskProvider<*>)?.name != "generateContractWrappers" })
+    tasks.compileJava.get().removeSolidity()
+    tasks.compileTestJava.get().removeSolidity()
+    tasks.compileKotlin.get().removeSolidity()
+    tasks.compileTestKotlin.get().removeSolidity()
+    tasks.build.get().removeSolidity()
+}
+
+fun Task.removeSolidity() {
+    val tasks = arrayOf("generateContractWrappers", "generateTestContractWrappers")
+    setDependsOn(dependsOn.filter {
+        if (it is SolidityCompile) return@filter false
+        val provider = it as? TaskProvider<*> ?: return@filter true
+        tasks.none { name -> provider.name.contains(name) }
+    })
 }
