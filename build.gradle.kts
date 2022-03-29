@@ -69,8 +69,6 @@ tasks.jar {
     }
 }
 
-
-
 java {
     // Current LTS version of Java
     sourceCompatibility = JavaVersion.VERSION_11

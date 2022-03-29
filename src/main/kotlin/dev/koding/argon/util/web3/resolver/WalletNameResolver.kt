@@ -24,12 +24,9 @@ object WalletNameManager {
     private val resolvers = arrayOf(MappingResolver, MinecraftResolver, ENSResolver)
 
     @JvmStatic
-    fun getName(address: String) =
-        addressCache.getOrPut(address.lowercase()) {
-            val name = resolvers.asSequence().mapNotNull { it.resolve(address) }.firstOrNull() ?: address
-            nameCache[name.lowercase()] = address
-            name
-        }
+    fun getName(address: String) = addressCache.getOrPut(address.lowercase()) {
+        resolvers.asSequence().mapNotNull { it.resolve(address) }.firstOrNull() ?: address
+    }
 
     @JvmStatic
     fun getAddress(name: String): String? {
@@ -59,7 +56,9 @@ object MinecraftResolver : WalletNameResolver {
 
     override fun reverse(name: String): String? {
         val uuid = runCatching { MojangAPI.getUUID(name) }.getOrNull() ?: return null
-        return runCatching { Contracts.nftWorldsPlayerContract.getPlayerPrimaryWallet(uuid.toString().replace("-", "")).send() }
+        return runCatching {
+            Contracts.nftWorldsPlayerContract.getPlayerPrimaryWallet(uuid.toString().replace("-", "")).send()
+        }
             .getOrNull()?.takeIf { it.isNotBlank() && it.isAddress() }
     }
 }
