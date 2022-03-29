@@ -4,13 +4,13 @@
 package dev.koding.argon
 
 import com.kotlindiscord.kord.extensions.ExtensibleBot
-import com.kotlindiscord.kord.extensions.checks.userFor
 import dev.koding.argon.data.config
 import dev.koding.argon.extensions.ClockifyExtension
 import dev.koding.argon.extensions.FilterExtension
+import dev.koding.argon.extensions.Web3Extension
 import dev.koding.argon.metrics.MetricManager
-import dev.kord.common.Color
-import dev.kord.rest.builder.message.create.embed
+import dev.koding.argon.util.Colors
+import dev.koding.argon.util.feedback
 
 suspend fun main() {
     configureMetrics()
@@ -19,24 +19,18 @@ suspend fun main() {
         applicationCommands {
             enabled = true
             config.discord.guildId?.let { defaultGuild(it) }
-
-            config.discord.ownerId?.let {
-                slashCommandCheck {
-                    failIf { userFor(event)?.id?.asString?.equals(it) != true }
-                }
-            }
         }
 
-        errorResponse { message, _ ->
-            embed {
-                color = Color(0xef5350)
-                description = message
+        errorResponse { message, type ->
+            feedback(type.error.message ?: message) {
+                color = Colors.ERROR
             }
         }
 
         extensions {
             add(::ClockifyExtension)
             add(::FilterExtension)
+            add(::Web3Extension)
         }
 
         config.discord.status?.let { s ->

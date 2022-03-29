@@ -5,6 +5,7 @@ pluginManagement {
         kotlin("plugin.serialization") version "1.6.10"
 
         id("com.github.johnrengelman.shadow") version "5.2.0"
+        id("org.web3j") version "4.9.0"
     }
 }
 

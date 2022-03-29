@@ -8,6 +8,7 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.koding.argon.data.config
+import dev.koding.argon.util.ownerOnly
 import dev.kord.core.entity.ReactionEmoji
 import dev.kord.core.event.message.MessageCreateEvent
 import kotlinx.coroutines.delay
@@ -21,6 +22,7 @@ class FilterExtension(override val name: String = "Filter") : Extension() {
         ephemeralSlashCommand {
             name = "filter"
             description = "Toggle filter"
+            ownerOnly()
 
             addFilterToggle("swearing", this@FilterExtension::swearFilterEnabled)
         }
@@ -34,7 +36,7 @@ class FilterExtension(override val name: String = "Filter") : Extension() {
                     .any { swear -> message.content.contains(swear, true) }
 
                 if (swore) {
-                    for (i in 0.. Random.nextInt(1, 3)) {
+                    for (i in 0..Random.nextInt(1, 3)) {
                         val emoji = config.filter.swearing.reactions.random()
                         message.addReaction(ReactionEmoji.Unicode(emoji.removeSurrounding("<", ">")))
                     }
