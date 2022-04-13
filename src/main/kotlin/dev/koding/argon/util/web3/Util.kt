@@ -9,7 +9,7 @@ import java.math.BigInteger
 
 const val NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-suspend fun <T> RemoteCall<T>.request(): T = sendAsync().await()
+suspend fun <T> RemoteCall<T>.request(): T? = kotlin.runCatching { sendAsync().await() }.getOrNull()
 
 fun BigInteger.fromEther(decimals: Int = 18) = (BigDecimal(this).divide(BigDecimal.TEN.pow(decimals))).toDouble()
 fun String.isAddress(allowNull: Boolean = false): Boolean {

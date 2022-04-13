@@ -1,14 +1,14 @@
 package dev.koding.argon.util.web3.resolver
 
+import dev.koding.argon.data.config
 import dev.koding.argon.util.httpClient
 import dev.koding.argon.util.json
+import dev.koding.argon.util.web3.HDWallet
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 import kotlin.random.Random
 
 typealias WalletMappings = List<WalletMapping>
@@ -16,7 +16,8 @@ typealias WalletMappings = List<WalletMapping>
 @Serializable
 data class WalletMapping(
     val name: String,
-    val address: JsonElement,
+    var address: JsonElement,
+    val type: MappingType = MappingType.ADDRESS,
     val meta: Meta = Meta()
 ) {
     val addresses: List<String>
@@ -33,7 +34,8 @@ data class WalletMapping(
         @JvmStatic
         fun load(): WalletMappings {
             if (instance != null) return instance!!
-            return try {
+
+            val fetchedMappings = try {
                 runBlocking<WalletMappings> {
                     httpClient.get<String>(
                         "https://gist.githubusercontent.com/KodingDev/7d814a3fe38e512f59c321d254b308aa/raw/wallets.json?q=${
@@ -46,8 +48,29 @@ data class WalletMapping(
             } catch (e: Exception) {
                 e.printStackTrace()
                 emptyList()
-            }.also { instance = it }
+            }
+
+            val mappings = fetchedMappings + (config.web3?.mappings ?: emptyList())
+            mappings.forEach { it.init() }
+            return mappings.also { instance = it }
         }
+    }
+
+    fun init() {
+        when (type) {
+            MappingType.MNEMONIC -> {
+                val wallet = HDWallet(address.jsonPrimitive.content)
+                address = buildJsonArray {
+                    wallet.deriveArray(100).forEach { add(it.address) }
+                }
+            }
+            else -> {}
+        }
+    }
+
+    enum class MappingType {
+        ADDRESS,
+        MNEMONIC,
     }
 }
 

@@ -21,4 +21,7 @@ object Contracts {
         Web3.gasProvider
     )
 
+    @JvmStatic
+    val wrldContract = Web3.polygon.getERC20("0xD5d86FC8d5C0Ea1aC1Ac5Dfab6E529c9967a45E9")
+
 }

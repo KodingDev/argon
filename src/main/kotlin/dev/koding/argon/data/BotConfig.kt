@@ -2,6 +2,7 @@ package dev.koding.argon.data
 
 import dev.koding.argon.util.decodeFromFile
 import dev.koding.argon.util.json
+import dev.koding.argon.util.web3.resolver.WalletMappings
 import kotlinx.serialization.Serializable
 import java.io.File
 
@@ -14,6 +15,7 @@ data class BotConfig(
     val metrics: Metrics = Metrics(),
     val clockify: Clockify? = null,
     val filter: Filter? = null,
+    val web3: Web3? = null
 ) {
     @Serializable
     data class Discord(
@@ -65,4 +67,9 @@ data class BotConfig(
             val deleteDelay: Long = 3000,
         )
     }
+
+    @Serializable
+    data class Web3(
+        val mappings: WalletMappings = emptyList()
+    )
 }
