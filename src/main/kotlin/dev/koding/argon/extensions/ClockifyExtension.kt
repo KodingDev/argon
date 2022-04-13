@@ -3,11 +3,12 @@ package dev.koding.argon.extensions
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respondPublic
+import dev.koding.argon.data.PermissionLevel
 import dev.koding.argon.data.clockify.ClockifyHelper
+import dev.koding.argon.data.permission
 import dev.koding.argon.util.asCurrency
 import dev.koding.argon.util.asMonthDisplay
 import dev.koding.argon.util.formatElapsedTime
-import dev.koding.argon.util.ownerOnly
 import dev.kord.common.Color
 import dev.kord.rest.builder.message.create.embed
 import java.util.*
@@ -17,7 +18,7 @@ class ClockifyExtension(override val name: String = "Clockify") : Extension() {
         publicSlashCommand {
             name = "clockify"
             description = "Fetch Clockify data"
-            ownerOnly()
+            permission(PermissionLevel.BOT_TEAM)
 
             action {
                 val report = ClockifyHelper.fetchMonthlyReport()

@@ -7,8 +7,10 @@ import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalBoolea
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
+import dev.koding.argon.data.PermissionLevel
 import dev.koding.argon.data.config
-import dev.koding.argon.util.ownerOnly
+import dev.koding.argon.data.permission
+import dev.koding.argon.data.permissionLevel
 import dev.kord.core.entity.ReactionEmoji
 import dev.kord.core.event.message.MessageCreateEvent
 import kotlinx.coroutines.delay
@@ -22,13 +24,13 @@ class FilterExtension(override val name: String = "Filter") : Extension() {
         ephemeralSlashCommand {
             name = "filter"
             description = "Toggle filter"
-            ownerOnly()
+            permission(PermissionLevel.BOT_TEAM)
 
             addFilterToggle("swearing", this@FilterExtension::swearFilterEnabled)
         }
 
         bot.on<MessageCreateEvent> {
-            if (message.author?.id?.asString != config.discord.ownerId) return@on
+            if (message.author?.permissionLevel != PermissionLevel.BOT_TEAM) return@on
             if (config.filter == null) return@on
 
             if (swearFilterEnabled) {

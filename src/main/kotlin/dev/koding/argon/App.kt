@@ -11,9 +11,18 @@ import dev.koding.argon.extensions.Web3Extension
 import dev.koding.argon.metrics.MetricManager
 import dev.koding.argon.util.Colors
 import dev.koding.argon.util.feedback
+import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+
+lateinit var owners: List<Snowflake>
 
 suspend fun main() {
     configureMetrics()
+
+    val kord = Kord(config.discord.token)
+    owners = kord.getApplicationInfo().let { app ->
+        app.team?.members?.map { it.userId } ?: listOf(app.ownerId)
+    }
 
     val bot = ExtensibleBot(config.discord.token) {
         applicationCommands {

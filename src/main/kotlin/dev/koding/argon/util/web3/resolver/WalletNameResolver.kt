@@ -1,8 +1,11 @@
 package dev.koding.argon.util.web3.resolver
 
+import dev.koding.argon.data.PermissionLevel
+import dev.koding.argon.data.permissionLevel
 import dev.koding.argon.util.web3.Contracts
 import dev.koding.argon.util.web3.Web3
 import dev.koding.argon.util.web3.isAddress
+import dev.kord.core.behavior.UserBehavior
 import me.kbrewster.mojangapi.MojangAPI
 import java.util.*
 
@@ -72,3 +75,10 @@ object MappingResolver : WalletNameResolver {
 
     override fun reverse(name: String) = mappings.firstOrNull { it.name.equals(name, true) }?.addresses
 }
+
+fun UserBehavior.getGhostAddresses(): List<String> {
+    if (permissionLevel > PermissionLevel.DEFAULT) return emptyList()
+    return WalletMapping.configMappings.flatMap { it.addresses + it.name }
+}
+
+fun String.isGhostAddress(user: UserBehavior) = this in user.getGhostAddresses()

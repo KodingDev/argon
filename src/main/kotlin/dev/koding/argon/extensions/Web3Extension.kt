@@ -10,6 +10,7 @@ import com.kotlindiscord.kord.extensions.types.respondingPaginator
 import dev.koding.argon.util.*
 import dev.koding.argon.util.web3.*
 import dev.koding.argon.util.web3.resolver.WalletNameManager
+import dev.koding.argon.util.web3.resolver.isGhostAddress
 
 class Web3Extension(override val name: String = "Web3") : Extension() {
     override suspend fun setup() {
@@ -23,7 +24,7 @@ class Web3Extension(override val name: String = "Web3") : Extension() {
 
                 action {
                     val address = WalletNameManager.getAddressForName(arguments.address)?.first() ?: arguments.address
-                    if (!address.isAddress()) discordError("Invalid wallet address")
+                    if (!address.isAddress() || address.isGhostAddress(user)) discordError("Invalid wallet address")
 
                     val rewards = runCatching {
                         Contracts.heroGalaxyEscrowContract.checkUserRewards(address).request()
@@ -45,10 +46,14 @@ class Web3Extension(override val name: String = "Web3") : Extension() {
 
                 action {
                     val address = WalletNameManager.getAddressForName(arguments.address)?.first() ?: arguments.address
-                    if (!address.isAddress()) discordError("Invalid wallet address")
+                    if (!address.isAddress() || address.isGhostAddress(user)) discordError("Invalid wallet address")
 
                     val name = WalletNameManager.getNameForAddress(address)
-                    if (name.equals(address, true)) discordError("No name found for wallet address")
+                    if (name.equals(
+                            address,
+                            true
+                        ) || name.isGhostAddress(user)
+                    ) discordError("No name found for wallet address")
 
                     respond { feedback("[`${address}`](${Web3.polygon.explorer!!.getAddress(address)}) resolves to name `$name`.") }
                 }
@@ -60,7 +65,7 @@ class Web3Extension(override val name: String = "Web3") : Extension() {
 
                 action {
                     val address = WalletNameManager.getAddressForName(arguments.address)
-                    if (address == null || address.isEmpty()) discordError("No address found for wallet name")
+                    if (address == null || address.isEmpty() || address.any { it.isGhostAddress(user) }) discordError("No address found for wallet name")
 
                     respondingPaginator {
                         address.chunked(10).forEachIndexed { page, chunk ->
@@ -86,7 +91,7 @@ class Web3Extension(override val name: String = "Web3") : Extension() {
 
                 action {
                     val address = WalletNameManager.getAddressForName(arguments.address)
-                    if (address == null || address.isEmpty()) discordError("No address found for wallet name")
+                    if (address == null || address.isEmpty() || address.any { it.isGhostAddress(user) }) discordError("No address found for wallet name")
 
                     val balances = address.mapThreaded(10) {
                         it to (Contracts.wrldContract.balanceOf(it).request()?.fromEther() ?: 0.0)

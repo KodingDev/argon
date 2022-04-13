@@ -31,6 +31,8 @@ data class WalletMapping(
     companion object {
         private var instance: WalletMappings? = null
 
+        lateinit var configMappings: WalletMappings
+
         @JvmStatic
         fun load(): WalletMappings {
             if (instance != null) return instance!!
@@ -50,7 +52,8 @@ data class WalletMapping(
                 emptyList()
             }
 
-            val mappings = fetchedMappings + (config.web3?.mappings ?: emptyList())
+            configMappings = config.web3?.mappings ?: emptyList()
+            val mappings = fetchedMappings + configMappings
             mappings.forEach { it.init() }
             return mappings.also { instance = it }
         }

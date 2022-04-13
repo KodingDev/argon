@@ -21,7 +21,7 @@ data class BotConfig(
     data class Discord(
         val token: String = "",
         val guildId: String? = null,
-        val ownerId: String? = null,
+        val whitelist: List<String> = emptyList(),
         val status: Status? = null
     ) {
         @Serializable
