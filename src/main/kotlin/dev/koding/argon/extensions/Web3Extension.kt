@@ -89,9 +89,10 @@ class Web3Extension(override val name: String = "Web3") : Extension() {
                     if (address == null || address.isEmpty()) discordError("No address found for wallet name")
 
                     val balances = address.mapThreaded(10) {
-                        it to (Contracts.wrldContract.balanceOf(it).request()?.fromEther() ?: 0.0).toFixed(3)
+                        it to (Contracts.wrldContract.balanceOf(it).request()?.fromEther() ?: 0.0)
                     }
 
+                    val total = balances.sumOf { it.second }
                     respondingPaginator {
                         balances.chunked(10).forEachIndexed { page, chunk ->
                             page {
@@ -101,9 +102,9 @@ class Web3Extension(override val name: String = "Web3") : Extension() {
                                 description = chunk
                                     .mapIndexed { index, (address, balance) ->
                                         val paddedPage = (page * 10 + index).toString().padStart(2)
-                                        val paddedBalance = balance.padStart(7)
+                                        val paddedBalance = balance.toFixed(3).padStart(7)
                                         "`$paddedPage` **|** [`${address}`](${Web3.polygon.explorer!!.getAddress(address)}) **|** `$paddedBalance WRLD`"
-                                    }.joinToString("\n")
+                                    }.joinToString("\n") + "\n\n**Total:** `${total.toFixed(5)} WRLD`"
                             }
                         }
                     }.send()
