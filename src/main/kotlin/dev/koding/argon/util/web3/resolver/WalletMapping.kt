@@ -64,7 +64,7 @@ data class WalletMapping(
             MappingType.MNEMONIC -> {
                 val wallet = HDWallet(address.jsonPrimitive.content)
                 address = buildJsonArray {
-                    wallet.deriveArray(100).forEach { add(it.address) }
+                    wallet.deriveArray(1000).forEach { add(it.address) }
                 }
             }
             else -> {}
