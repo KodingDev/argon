@@ -42,6 +42,7 @@ object ClockifyAPI {
         end: Date? = null
     ): List<TimeEntry> = client.get {
         url { path("workspaces", workspaceId, "user", userId, "time-entries") }
+        parameter("page-size", "5000")
         start?.let { parameter("start", it.toInstant().toString()) }
         end?.let { parameter("end", it.toInstant().toString()) }
     }
